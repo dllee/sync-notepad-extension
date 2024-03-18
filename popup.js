@@ -1,22 +1,21 @@
 document.addEventListener('DOMContentLoaded', function() {
+  const saveButton = document.getElementById('saveButton');
+  const loadButton = document.getElementById('loadButton');
   const notepad = document.getElementById('notepad');
 
-  // 저장된 노트 내용 로드
-  chrome.storage.sync.get('notepad', function(data) {
-      notepad.value = data.notepad || '';
+  // "쓰기" 버튼 이벤트 리스너
+  saveButton.addEventListener('click', function() {
+      const noteContent = notepad.value;
+      chrome.storage.sync.set({notepad: noteContent}, function() {
+          console.log('노트가 저장되었습니다.');
+      });
   });
 
-  // 텍스트 변경시 실시간 저장
-  notepad.addEventListener('input', function() {
-      chrome.storage.sync.set({notepad: notepad.value});
+  // "읽기" 버튼 이벤트 리스너
+  loadButton.addEventListener('click', function() {
+      chrome.storage.sync.get('notepad', function(data) {
+          notepad.value = data.notepad || '';
+          console.log('노트를 불러왔습니다.');
+      });
   });
-});
-
-// 스토리지 변경 감지 및 내용 업데이트
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-  for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-      if (key === 'notepad') {
-          document.getElementById('notepad').value = newValue;
-      }
-  }
 });
