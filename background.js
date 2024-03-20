@@ -1,18 +1,28 @@
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.sync.set({notepad: ''});
+  chrome.storage.sync.set({ clippings: [] });
 });
 
-chrome.action.onClicked.addListener((tab) => {
-  chrome.scripting.executeScript({
-    target: {tabId: tab.id},
-    function: setClipboardContent
-  });
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "saveClipping") {
+      saveClipping(request, sendResponse);
+  } else if (request.action === "getClippings") {
+      getClippings(sendResponse);
+  }
+  return true;
 });
 
-function setClipboardContent() {
-  chrome.storage.sync.get('notepad', (data) => {
-    navigator.clipboard.writeText(data.notepad).then(() => {
-      console.log('Notepad content copied to clipboard.');
-    }).catch(err => console.error('Failed to copy: ', err));
+const saveClipping = (request, sendResponse) => {
+  chrome.storage.sync.get("clippings", (result) => {
+      let clippings = result.clippings || [];
+      clippings.unshift({ text: request.text, creationDate: new Date().getTime() });
+      chrome.storage.sync.set({ clippings }, () => {
+          sendResponse({ clippings });
+      });
   });
-}
+};
+
+const getClippings = (sendResponse) => {
+  chrome.storage.sync.get("clippings", (result) => {
+      sendResponse({ clippings: result.clippings || [] });
+  });
+};
