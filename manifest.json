@@ -1,9 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Simple Note",
+  "name": "임시 메모장",
   "version": "1.0",
-  "description": "A simple notepad to sync text across Chrome browsers.",
-  "permissions": ["clipboardRead", "clipboardWrite", "storage"],
+  "permissions": ["storage"],
   "background": {
     "service_worker": "background.js"
   },
