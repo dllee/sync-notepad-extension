@@ -2,13 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>메모장 확장 프로그램</title>
+    <title>임시 메모장</title>
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-    <textarea id="notepad" placeholder="여기에 메모하세요..."></textarea>
-    <button id="saveButton">쓰기</button>
-    <button id="loadButton">읽기</button>
+    <div id="app">
+        <textarea id="newClipping" placeholder="메모를 입력하세요..."></textarea>
+        <button id="saveClipping">저장</button>
+        <ul id="clippingsList"></ul>
+    </div>
     <script src="popup.js"></script>
 </body>
 </html>
