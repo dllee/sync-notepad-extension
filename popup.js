@@ -1,21 +1,26 @@
-document.addEventListener('DOMContentLoaded', function() {
-  const saveButton = document.getElementById('saveButton');
-  const loadButton = document.getElementById('loadButton');
-  const notepad = document.getElementById('notepad');
-
-  // "쓰기" 버튼 이벤트 리스너
-  saveButton.addEventListener('click', function() {
-      const noteContent = notepad.value;
-      chrome.storage.sync.set({notepad: noteContent}, function() {
-          console.log('노트가 저장되었습니다.');
-      });
-  });
-
-  // "읽기" 버튼 이벤트 리스너
-  loadButton.addEventListener('click', function() {
-      chrome.storage.sync.get('notepad', function(data) {
-          notepad.value = data.notepad || '';
-          console.log('노트를 불러왔습니다.');
-      });
-  });
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('saveClipping').addEventListener('click', saveCurrentClipping);
+    loadClippings();
 });
+
+const saveCurrentClipping = () => {
+    const text = document.getElementById('newClipping').value;
+    if (text.trim()) {
+        chrome.runtime.sendMessage({action: "saveClipping", text}, () => {
+            document.getElementById('newClipping').value = '';
+            loadClippings();
+        });
+    }
+};
+
+const loadClippings = () => {
+    chrome.runtime.sendMessage({action: "getClippings"}, (response) => {
+        const clippingsList = document.getElementById('clippingsList');
+        clippingsList.innerHTML = '';
+        response.clippings.forEach((clipping) => {
+            const li = document.createElement('li');
+            li.textContent = clipping.text;
+            clippingsList.appendChild(li);
+        });
+    });
+};
